@@ -613,8 +613,7 @@ export class LinkedinProvider extends SocialAbstract implements SocialProvider {
     }
   );
 
-  const { object } = await response.json();
-  return object;
+  return response.headers.get('x-restli-id')!;
 }
 
   private createPostResponse(
