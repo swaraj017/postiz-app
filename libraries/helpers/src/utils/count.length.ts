@@ -6,7 +6,7 @@ export const textSlicer = (
   end: number,
   text: string
 ): { start: number; end: number } => {
-  if (integrationType !== 'x') {
+  if (integrationType !== 'x' && integrationType !== 'bluesky') {
     return {
       start: 0,
       end,
