@@ -1,12 +1,24 @@
 // @ts-ignore
 import twitter from 'twitter-text';
 
+const normalizeBlueskyUrls = (text: string): string => {
+  return text.replace(/https?:\/\/\S+/g, '0'.repeat(23));
+};
+
 export const textSlicer = (
   integrationType: string,
   end: number,
   text: string
 ): { start: number; end: number } => {
-  if (integrationType !== 'x' && integrationType !== 'bluesky') {
+  if (integrationType === 'bluesky') {
+    const normalized = normalizeBlueskyUrls(text);
+    return {
+      start: 0,
+      end: normalized.length <= end ? end : end,
+    };
+  }
+
+  if (integrationType !== 'x') {
     return {
       start: 0,
       end,
