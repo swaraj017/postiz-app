@@ -12,9 +12,10 @@ export const textSlicer = (
 ): { start: number; end: number } => {
   if (integrationType === 'bluesky') {
     const normalized = normalizeBlueskyUrls(text);
+    const diff = text.length - normalized.length;
     return {
       start: 0,
-      end: normalized.length <= end ? end : end,
+      end: end + diff,
     };
   }
 
