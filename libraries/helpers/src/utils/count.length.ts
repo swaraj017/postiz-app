@@ -2,8 +2,11 @@
 import twitter from 'twitter-text';
 
 const normalizeBlueskyUrls = (text: string): string => {
-  return text.replace(/https?:\/\/\S+/g, '0'.repeat(23));
+  return text.replace(/https?:\/\/\S+/g, (match) =>
+    match.length > 23 ? '0'.repeat(23) : match
+  );
 };
+
 
 export const textSlicer = (
   integrationType: string,
