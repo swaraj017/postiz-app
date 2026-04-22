@@ -456,9 +456,10 @@ export class TiktokProvider extends SocialAbstract implements SocialProvider {
     }
   }
 
-  private buildTikokPostInfoBody(firstPost: PostDetails<TikTokDto>) {
+  private buildTikTokPostInfoBody(firstPost: PostDetails<TikTokDto>) {
   const isPhoto =
     (firstPost?.media?.[0]?.path?.indexOf('mp4') || -1) === -1;
+
   const method = firstPost?.settings?.content_posting_method;
 
   if (method === 'DIRECT_POST') {
@@ -467,12 +468,14 @@ export class TiktokProvider extends SocialAbstract implements SocialProvider {
         ...(isPhoto && firstPost.settings.title
           ? { title: firstPost.settings.title.slice(0, 90) }
           : {}),
+
         ...(!isPhoto && firstPost.message
           ? { title: firstPost.message }
           : {}),
+
         ...(isPhoto ? { description: firstPost.message } : {}),
 
-        
+      
         ...(!isPhoto && firstPost?.media?.[0]?.thumbnailTimestamp
           ? {
               video_cover_timestamp_ms:
@@ -482,20 +485,27 @@ export class TiktokProvider extends SocialAbstract implements SocialProvider {
 
         privacy_level:
           firstPost.settings.privacy_level || 'PUBLIC_TO_EVERYONE',
+
         ...(isPhoto
           ? {}
           : { disable_duet: !firstPost.settings.duet || false }),
+
         disable_comment: !firstPost.settings.comment || false,
+
         ...(isPhoto
           ? {}
           : { disable_stitch: !firstPost.settings.stitch || false }),
+
         ...(isPhoto
           ? {}
           : { is_aigc: firstPost.settings.video_made_with_ai || false }),
+
         brand_content_toggle:
           firstPost.settings.brand_content_toggle || false,
+
         brand_organic_toggle:
           firstPost.settings.brand_organic_toggle || false,
+
         ...(isPhoto
           ? {
               auto_add_music: firstPost.settings.autoAddMusic === 'yes',
@@ -510,12 +520,14 @@ export class TiktokProvider extends SocialAbstract implements SocialProvider {
       ...(isPhoto && firstPost.settings.title
         ? { title: firstPost.settings.title }
         : {}),
+
       ...(!isPhoto && firstPost.message
         ? { title: firstPost.message }
         : {}),
+
       ...(isPhoto ? { description: firstPost.message } : {}),
 
-       
+
       ...(!isPhoto && firstPost?.media?.[0]?.thumbnailTimestamp
         ? {
             video_cover_timestamp_ms:
@@ -526,7 +538,7 @@ export class TiktokProvider extends SocialAbstract implements SocialProvider {
   };
 }
 
-  private buildTikokSourceInfoBody(firstPost: PostDetails<TikTokDto>) {
+  private buildTikTokSourceInfoBody(firstPost: PostDetails<TikTokDto>) {
   const isPhoto =
     (firstPost?.media?.[0]?.path?.indexOf('mp4') || -1) === -1;
 
