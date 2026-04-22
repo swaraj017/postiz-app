@@ -457,86 +457,84 @@ export class TiktokProvider extends SocialAbstract implements SocialProvider {
   }
 
   private buildTikokPostInfoBody(firstPost: PostDetails<TikTokDto>) {
-    const isPhoto = (firstPost?.media?.[0]?.path?.indexOf('mp4') || -1) === -1;
-    const method = firstPost?.settings?.content_posting_method;
+  const isPhoto = (firstPost?.media?.[0]?.path?.indexOf('mp4') || -1) === -1;
+  const method = firstPost?.settings?.content_posting_method;
 
-    if (method === 'DIRECT_POST') {
-      return {
-        post_info: {
-          ...(isPhoto && firstPost.settings.title
-            ? { title: firstPost.settings.title.slice(0, 90) }
-            : {}),
-          ...(!isPhoto && firstPost.message
-            ? { title: firstPost.message }
-            : {}),
-          ...(isPhoto ? { description: firstPost.message } : {}),
-          privacy_level:
-            firstPost.settings.privacy_level || 'PUBLIC_TO_EVERYONE',
-          ...(isPhoto
-            ? {}
-            : { disable_duet: !firstPost.settings.duet || false }),
-          disable_comment: !firstPost.settings.comment || false,
-          ...(isPhoto
-            ? {}
-            : { disable_stitch: !firstPost.settings.stitch || false }),
-          ...(isPhoto
-            ? {}
-            : { is_aigc: firstPost.settings.video_made_with_ai || false }),
-          brand_content_toggle:
-            firstPost.settings.brand_content_toggle || false,
-          brand_organic_toggle:
-            firstPost.settings.brand_organic_toggle || false,
-          ...(isPhoto
-            ? {
-                auto_add_music: firstPost.settings.autoAddMusic === 'yes',
-              }
-            : {}),
-        },
-      };
-    }
-
+  if (method === 'DIRECT_POST') {
     return {
       post_info: {
         ...(isPhoto && firstPost.settings.title
-          ? { title: firstPost.settings.title }
+          ? { title: firstPost.settings.title.slice(0, 90) }
           : {}),
-        ...(!isPhoto && firstPost.message ? { title: firstPost.message } : {}),
+        ...(!isPhoto && firstPost.message
+          ? { title: firstPost.message }
+          : {}),
         ...(isPhoto ? { description: firstPost.message } : {}),
+        privacy_level:
+          firstPost.settings.privacy_level || 'PUBLIC_TO_EVERYONE',
+        ...(isPhoto
+          ? {}
+          : { disable_duet: !firstPost.settings.duet || false }),
+        disable_comment: !firstPost.settings.comment || false,
+        ...(isPhoto
+          ? {}
+          : { disable_stitch: !firstPost.settings.stitch || false }),
+        ...(isPhoto
+          ? {}
+          : { is_aigc: firstPost.settings.video_made_with_ai || false }),
+        brand_content_toggle:
+          firstPost.settings.brand_content_toggle || false,
+        brand_organic_toggle:
+          firstPost.settings.brand_organic_toggle || false,
+        ...(isPhoto
+          ? { auto_add_music: firstPost.settings.autoAddMusic === 'yes' }
+          : {}),
+        ...(!isPhoto && firstPost?.media?.[0]?.thumbnailTimestamp
+          ? { video_cover_timestamp_ms: firstPost.media[0].thumbnailTimestamp }
+          : {}),
       },
     };
   }
+
+  return {
+    post_info: {
+      ...(isPhoto && firstPost.settings.title
+        ? { title: firstPost.settings.title }
+        : {}),
+      ...(!isPhoto && firstPost.message ? { title: firstPost.message } : {}),
+      ...(isPhoto ? { description: firstPost.message } : {}),
+      ...(!isPhoto && firstPost?.media?.[0]?.thumbnailTimestamp
+        ? { video_cover_timestamp_ms: firstPost.media[0].thumbnailTimestamp }
+        : {}),
+    },
+  };
+}
 
   private buildTikokSourceInfoBody(firstPost: PostDetails<TikTokDto>) {
-    const isPhoto = (firstPost?.media?.[0]?.path?.indexOf('mp4') || -1) === -1;
+  const isPhoto = (firstPost?.media?.[0]?.path?.indexOf('mp4') || -1) === -1;
 
-    if (isPhoto) {
-      return {
-        post_mode:
-          firstPost?.settings?.content_posting_method === 'DIRECT_POST'
-            ? 'DIRECT_POST'
-            : 'MEDIA_UPLOAD',
-        media_type: 'PHOTO',
-        source_info: {
-          source: 'PULL_FROM_URL',
-          photo_cover_index: 0,
-          photo_images: firstPost.media?.map((p) => p.path),
-        },
-      };
-    }
-
+  if (isPhoto) {
     return {
+      post_mode:
+        firstPost?.settings?.content_posting_method === 'DIRECT_POST'
+          ? 'DIRECT_POST'
+          : 'MEDIA_UPLOAD',
+      media_type: 'PHOTO',
       source_info: {
         source: 'PULL_FROM_URL',
-        video_url: firstPost?.media?.[0]?.path!,
-        ...(firstPost?.media?.[0]?.thumbnailTimestamp!
-          ? {
-              video_cover_timestamp_ms:
-                firstPost?.media?.[0]?.thumbnailTimestamp!,
-            }
-          : {}),
+        photo_cover_index: 0,
+        photo_images: firstPost.media?.map((p) => p.path),
       },
     };
   }
+
+  return {
+    source_info: {
+      source: 'PULL_FROM_URL',
+      video_url: firstPost?.media?.[0]?.path!,
+    },
+  };
+}
 
   async post(
     id: string,
